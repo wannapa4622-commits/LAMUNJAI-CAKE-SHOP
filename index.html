@@ -1,911 +1,839 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="th" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cake Online App - Price Calculator</title>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <title>🍰 Bakery Hub - ระบบร้านขนมเค้กออนไลน์ครบวงจร</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for Admin Sales Dashboard -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Kanit', sans-serif;
-        }
-
-        body {
-            background-color: #fcefee;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        /* จำลองกรอบสมาร์ตโฟน */
-        .phone-mockup {
-            width: 390px;
-            height: 844px;
-            background-color: #fffafb;
-            border-radius: 44px;
-            box-shadow: 0 20px 40px rgba(238, 163, 163, 0.35);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            border: 12px solid #ffffff;
-        }
-
-        /* แถบสถานะด้านบน */
-        .status-bar {
-            height: 44px;
-            background-color: #fff1f2;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 24px;
-            font-size: 13px;
-            font-weight: 500;
-            color: #d16b75;
-            flex-shrink: 0;
-        }
-
-        .status-bar .icons i {
-            margin-left: 5px;
-            font-size: 11px;
-        }
-
-        /* พื้นที่เนื้อหาหลักแต่ละหน้า */
-        .page-view {
-            flex: 1;
-            overflow-y: auto;
-            padding: 16px 20px 80px 20px;
-            display: none;
-        }
-
-        .page-view.active-page {
-            display: block;
-        }
-
-        .page-view::-webkit-scrollbar {
-            display: none;
-        }
-
-        /* ส่วนหัวทักทาย */
-        .header-section {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .greeting h1 {
-            font-size: 18px;
-            color: #5c4033;
-            font-weight: 600;
-        }
-
-        .greeting p {
-            font-size: 12px;
-            color: #e28791;
-        }
-
-        .profile-pic {
-            width: 40px;
-            height: 40px;
-            background-color: #ffe6e8;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #ff6b81;
-            font-size: 18px;
-            cursor: pointer;
-        }
-
-        /* การ์ดติดตามพัสดุ */
-        .delivery-card {
-            background: linear-gradient(135deg, #fff0f3 0%, #ffe3e8 100%);
-            border-radius: 20px;
-            padding: 14px 16px;
-            margin-bottom: 20px;
-            border: 1px solid #ffd1d9;
-            box-shadow: 0 4px 12px rgba(255, 182, 193, 0.15);
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .delivery-card:hover {
-            transform: scale(1.02);
-        }
-
-        .delivery-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .delivery-title {
-            font-size: 12px;
-            font-weight: 600;
-            color: #c95d6a;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .delivery-badge {
-            background-color: #ff6b81;
-            color: white;
-            font-size: 10px;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-weight: 500;
-        }
-
-        .delivery-content {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .delivery-icon {
-            width: 42px;
-            height: 42px;
-            background-color: #ffffff;
-            border-radius: 12px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #ff6b81;
-            font-size: 18px;
-        }
-
-        .delivery-details h4 {
-            font-size: 13px;
-            color: #5c4033;
-            margin-bottom: 2px;
-        }
-
-        .delivery-details p {
-            font-size: 11px;
-            color: #a68a7c;
-        }
-
-        /* หัวข้อส่วนต่างๆ */
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .section-header h3 {
-            font-size: 14px;
-            color: #5c4033;
-            font-weight: 600;
-        }
-
-        .section-header a {
-            font-size: 11px;
-            color: #e28791;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        /* เมนูลัด 4 ปุ่ม */
-        .shortcut-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .shortcut-btn {
-            background-color: #ffffff;
-            border: 1px solid #fae1e5;
-            border-radius: 16px;
-            padding: 10px 4px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(230, 200, 200, 0.15);
-            transition: transform 0.2s, background-color 0.2s;
-        }
-
-        .shortcut-btn:hover {
-            transform: translateY(-2px);
-            background-color: #fff5f7;
-        }
-
-        .shortcut-icon {
-            width: 42px;
-            height: 42px;
-            border-radius: 12px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 18px;
-        }
-
-        .shortcut-btn span {
-            font-size: 11px;
-            color: #6b5246;
-            font-weight: 500;
-        }
-
-        /* ประวัติการจัดส่ง */
-        .history-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-bottom: 10px;
-        }
-
-        .history-card {
-            background-color: #ffffff;
-            border-radius: 12px;
-            padding: 10px 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid #f3e5e8;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.02);
-        }
-
-        .history-info h5 {
-            font-size: 12px;
-            color: #5c4033;
-            margin-bottom: 2px;
-        }
-
-        .history-info p {
-            font-size: 10px;
-            color: #a68a7c;
-        }
-
-        .status-tag {
-            font-size: 10px;
-            color: #4caf50;
-            background-color: #e8f5e9;
-            padding: 3px 8px;
-            border-radius: 6px;
-            font-weight: 500;
-        }
-
-        /* แถบเมนูด้านล่าง */
-        .bottom-nav {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 70px;
-            background-color: #ffffff;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            border-top: 1px solid #f3e5e8;
-            padding-bottom: 10px;
-            box-shadow: 0 -4px 12px rgba(0,0,0,0.03);
-            flex-shrink: 0;
-            z-index: 10;
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: #c4a49c;
-            text-decoration: none;
-            font-size: 9px;
-            gap: 3px;
-            cursor: pointer;
-            transition: color 0.2s;
-            background: none;
-            border: none;
-        }
-
-        .nav-item i {
-            font-size: 16px;
-        }
-
-        .nav-item.active, .nav-item:hover {
-            color: #ff6b81;
-            font-weight: 600;
-        }
-
-        /* หน้าแต่งเค้กและคำนวณราคา */
-        .subpage-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 14px;
-        }
-
-        .back-btn {
-            width: 35px;
-            height: 35px;
-            background-color: #ffe6e8;
-            border: none;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #ff6b81;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        .subpage-title {
-            font-size: 15px;
-            color: #5c4033;
-            font-weight: 600;
-        }
-
-        .design-card-box {
-            background: #ffffff;
-            border: 1px solid #f3e5e8;
-            border-radius: 14px;
-            padding: 10px 12px;
-            margin-bottom: 10px;
-            font-size: 12px;
-            color: #5c4033;
-        }
-
-        .design-card-box strong {
-            display: block;
-            margin-bottom: 6px;
-            color: #d16b75;
-        }
-
-        .option-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .option-label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 11px;
-            cursor: pointer;
-            color: #5c4033;
-        }
-
-        .price-tag {
-            float: right;
-            color: #e28791;
-            font-weight: 500;
-        }
-
-        /* แถบสรุปราคารวมด้านล่างในหน้าดีไซน์ */
-        .price-summary-bar {
-            background: linear-gradient(135deg, #fff0f3 0%, #ffe3e8 100%);
-            border: 1px solid #ffd1d9;
-            border-radius: 14px;
-            padding: 10px 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .total-price-text {
-            font-size: 15px;
-            font-weight: 600;
-            color: #d16b75;
-        }
-
-        .action-buttons-group {
-            display: flex;
-            gap: 8px;
-        }
-
-        .confirm-design-btn {
-            background-color: #ff6b81;
-            color: white;
-            border: none;
-            flex: 1;
-            padding: 10px;
-            border-radius: 12px;
-            font-size: 13px;
-            cursor: pointer;
-            font-weight: 600;
-            box-shadow: 0 4px 10px rgba(255, 107, 129, 0.3);
-        }
-
-        .confirm-design-btn:hover {
-            background-color: #e0556b;
-        }
-
-        .reset-btn {
-            background-color: #f3e5e8;
-            color: #8c7365;
-            border: none;
-            padding: 10px 14px;
-            border-radius: 12px;
-            font-size: 12px;
-            cursor: pointer;
-            font-weight: 500;
-        }
-
-        .reset-btn:hover {
-            background-color: #e2d1d4;
-        }
-
-        /* Modal แจ้งเตือน */
-        .modal-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.4);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-
-        .modal-overlay.show {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .modal-box {
-            width: 310px;
-            background: #ffffff;
-            border-radius: 20px;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            transform: translateY(20px);
-            transition: transform 0.3s ease;
-        }
-
-        .modal-overlay.show .modal-box {
-            transform: translateY(0);
-        }
-
-        .modal-box h3 {
-            color: #5c4033;
-            font-size: 16px;
-            margin-bottom: 8px;
-        }
-
-        .modal-box p {
-            color: #8c7365;
-            font-size: 12px;
-            margin-bottom: 16px;
-            line-height: 1.6;
-            text-align: left;
-            background: #fff9f9;
-            padding: 10px;
-            border-radius: 10px;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .modal-btn {
-            background-color: #ff6b81;
-            color: white;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 12px;
-            font-size: 12px;
-            cursor: pointer;
-            font-weight: 500;
-            flex: 1;
-        }
-
-        .modal-btn:hover {
-            background-color: #e0556b;
-        }
-
-        .modal-btn-secondary {
-            background-color: #f3e5e8;
-            color: #5c4033;
-            border: none;
-            padding: 8px 14px;
-            border-radius: 12px;
-            font-size: 12px;
-            cursor: pointer;
-            font-weight: 500;
-        }
-
-        .modal-btn-secondary:hover {
-            background-color: #e2d1d4;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="phone-mockup">
-        <!-- แถบสถานะด้านบน -->
-        <div class="status-bar">
-            <span id="current-time">09:41</span>
-            <div class="icons">
-                <i class="fa-solid fa-signal"></i>
-                <i class="fa-solid fa-wifi"></i>
-                <i class="fa-solid fa-battery-full"></i>
-            </div>
-        </div>
-
-        <!-- ================= PAGE 1: หน้าแรก (Home) ================= -->
-        <div id="page-home" class="page-view active-page">
-            <div class="header-section">
-                <div class="greeting">
-                    <h1>ร้านเค้กละมุนใจ 🍰</h1>
-                    <p>เลือกส่วนผสมแล้วออกแบบเค้กในฝันกันเลย!</p>
-                </div>
-                <div class="profile-pic" onclick="switchPage('account')">
-                    <i class="fa-solid fa-user-heart"></i>
-                </div>
-            </div>
-
-            <!-- การ์ดติดตามพัสดุกำลังจัดส่ง -->
-            <div class="delivery-card" onclick="openModalInfo('สถานะคำสั่งซื้อ', 'ออเดอร์เค้กวันเกิด ครีมนมสด (1 ปอนด์)\n\n📍 สถานะ: กำลังจัดส่งโดย Rider (พี่สมชาย)\n⏱️ เวลาถึงโดยประมาณ: อีก 10 นาที\n📞 โทรติดต่อไรเดอร์: 089-123-4567')">
-                <div class="delivery-header">
-                    <span class="delivery-title">
-                        <i class="fa-solid fa-truck-fast"></i> สถานะการจัดส่ง
-                    </span>
-                    <span class="delivery-badge">กำลังจัดส่ง</span>
-                </div>
-                <div class="delivery-content">
-                    <div class="delivery-icon">
-                        <i class="fa-solid fa-cake-candles"></i>
-                    </div>
-                    <div class="delivery-details">
-                        <h4>เค้กวันเกิด ครีมนมสด (1 ปอนด์)</h4>
-                        <p>พัสดุกำลังเดินทางถึงคุณ (แตะเพื่อดูรายละเอียด)</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- เมนูลัด 4 ปุ่ม -->
-            <div class="section-header">
-                <h3>เมนูลัดส่วนผสมเค้ก</h3>
-            </div>
-            <div class="shortcut-grid">
-                <div class="shortcut-btn" onclick="switchPage('design')">
-                    <div class="shortcut-icon" style="background-color: #ffe6e8; color: #ff6b81;">
-                        <i class="fa-solid fa-droplet"></i>
-                    </div>
-                    <span>ซอส</span>
-                </div>
-                <div class="shortcut-btn" onclick="switchPage('design')">
-                    <div class="shortcut-icon" style="background-color: #fff3e0; color: #ffa726;">
-                        <i class="fa-solid fa-cloud"></i>
-                    </div>
-                    <span>ครีม</span>
-                </div>
-                <div class="shortcut-btn" onclick="switchPage('design')">
-                    <div class="shortcut-icon" style="background-color: #e8f5e9; color: #66bb6a;">
-                        <i class="fa-solid fa-ice-cream"></i>
-                    </div>
-                    <span>ท็อปปิ้ง</span>
-                </div>
-                <div class="shortcut-btn" onclick="switchPage('design')">
-                    <div class="shortcut-icon" style="background-color: #ede7f6; color: #ab47bc;">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i>
-                    </div>
-                    <span>ดีไซน์เอง</span>
-                </div>
-            </div>
-
-            <!-- ประวัติการจัดส่ง -->
-            <div class="section-header">
-                <h3>ประวัติการจัดส่ง</h3>
-                <a onclick="switchPage('tracking')">ดูทั้งหมด</a>
-            </div>
-            <div class="history-list">
-                <div class="history-card">
-                    <div class="history-info">
-                        <h5>เค้กช็อกโกแลต สตอเบอร์รี่</h5>
-                        <p>16 ส.ค. 2569 • ส่งสำเร็จ</p>
-                    </div>
-                    <span class="status-tag">สำเร็จ</span>
-                </div>
-                <div class="history-card">
-                    <div class="history-info">
-                        <h5>เค้กมะพร้าวอ่อน ครีมนมสด</h5>
-                        <p>12 ส.ค. 2569 • ส่งสำเร็จ</p>
-                    </div>
-                    <span class="status-tag">สำเร็จ</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- ================= PAGE 2: เค้ก & ออกแบบ (Cake Catalog & Design Combined) ================= -->
-        <div id="page-design" class="page-view">
-            <div class="subpage-header">
-                <button class="back-btn" onclick="switchPage('home')"><i class="fa-solid fa-arrow-left"></i></button>
-                <div class="subpage-title">เลือกเค้ก & ออกแบบตามใจชอบ</div>
-            </div>
-
-            <!-- ส่วนเลือกเมนูสำเร็จรูป (รวมจากหน้าเค้ก) -->
-            <div class="design-card-box">
-                <strong>🍰 เมนูเค้กยอดนิยมแนะนำ</strong>
-                <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 6px;">
-                    <div style="background: #fff9f9; padding: 8px; border-radius: 10px; cursor: pointer;" onclick="openModalInfo('เค้กสตรอเบอร์รี่พรีเมียม', 'ราคา: 350 บาท\nซอส: สตอเบอร์รี่\nครีม: ครีมนมสด\nท็อปปิ้ง: ผลไม้สด')">
-                        <strong>🍓 เค้กสตรอเบอร์รี่พรีเมียม <span class="price-tag">350.-</span></strong>
-                        <p style="color:#8c7365; font-size: 11px;">เนื้อเค้กวนิลานุ่มละมุน ซอสสตอเบอร์รี่แท้</p>
-                    </div>
-                    <div style="background: #fff9f9; padding: 8px; border-radius: 10px; cursor: pointer;" onclick="openModalInfo('เค้กช็อกโกแลตหน่วง', 'ราคา: 390 บาท\nซอส: ช็อกโกแลต\nครีม: ครีมช็อกโกแลต\nท็อปปิ้ง: ดอกไม้ทานได้')">
-                        <strong>🍫 เค้กช็อกโกแลตหน่วง <span class="price-tag">390.-</span></strong>
-                        <p style="color:#8c7365; font-size: 11px;">ดาร์กช็อกโกแลตเข้มข้น หวานน้อยกำลังดี</p>
-                    </div>
-                </div>
-            </div>
-
-            <hr style="border: none; border-top: 1px dashed #ffd1d9; margin: 14px 0;">
-
-            <!-- ส่วนคำนวณราคา & ดีไซน์เอง -->
-            <div class="design-card-box">
-                <strong>1. เลือกซอสเค้ก (เลือก 1 อย่าง)</strong>
-                <div class="option-group">
-                    <label class="option-label"><input type="radio" name="sauce" value="ซอสสตอเบอร์รี่" data-price="50" checked onchange="calculateTotal()"> สตอเบอร์รี่ <span class="price-tag">+50.-</span></label>
-                    <label class="option-label"><input type="radio" name="sauce" value="ซอสช็อกโกแลต" data-price="60" onchange="calculateTotal()"> ช็อกโกแลต <span class="price-tag">+60.-</span></label>
-                    <label class="option-label"><input type="radio" name="sauce" value="ซอสบลูเบอร์รี่" data-price="55" onchange="calculateTotal()"> บลูเบอร์รี่ <span class="price-tag">+55.-</span></label>
-                    <label class="option-label"><input type="radio" name="sauce" value="ซอสมะพร้าว" data-price="65" onchange="calculateTotal()"> มะพร้าว <span class="price-tag">+65.-</span></label>
-                    <label class="option-label"><input type="radio" name="sauce" value="แยมส้ม" data-price="50" onchange="calculateTotal()"> แยมส้ม <span class="price-tag">+50.-</span></label>
-                </div>
-            </div>
-
-            <div class="design-card-box">
-                <strong>2. เลือกครีมและการแต่งสี</strong>
-                <div class="option-group">
-                    <label class="option-label"><input type="radio" name="cream" value="ครีมนมสด" data-price="80" checked onchange="calculateTotal()"> ครีมนมสด <span class="price-tag">+80.-</span></label>
-                    <label class="option-label"><input type="radio" name="cream" value="ครีมช็อกโกแลต" data-price="90" onchange="calculateTotal()"> ครีมช็อกโกแลต <span class="price-tag">+90.-</span></label>
-                </div>
-                <div style="margin-top: 8px; font-size: 11px; display: flex; justify-content: space-between; align-items: center;">
-                    <span>เลือกสีครีมเอง: <input type="color" id="cream-color" value="#ffb6c1" style="vertical-align: middle; border:none; width:28px; height:20px; cursor:pointer;" onchange="updateColorChoice()"></span>
-                    <span id="color-code-text" style="color: #e28791;">#ffb6c1</span>
-                </div>
-            </div>
-
-            <div class="design-card-box">
-                <strong>3. เลือกท็อปปิ้ง (เลือกได้มากกว่า 1)</strong>
-                <div class="option-group">
-                    <label class="option-label"><input type="checkbox" name="topping" value="ผลไม้สด" data-price="70" onchange="calculateTotal()"> ผลไม้สด <span class="price-tag">+70.-</span></label>
-                    <label class="option-label"><input type="checkbox" name="topping" value="ดอกไม้ทานได้" data-price="90" onchange="calculateTotal()"> ดอกไม้ทานได้ <span class="price-tag">+90.-</span></label>
-                    <label class="option-label"><input type="checkbox" name="topping" value="ท็อปปิ้งอื่นๆ" data-price="40" onchange="calculateTotal()"> และอื่นๆ (ช็อกโกแลตชิป/มาการ์อง) <span class="price-tag">+40.-</span></label>
-                </div>
-            </div>
-
-            <div class="price-summary-bar">
-                <span>ราคารวมทั้งหมด:</span>
-                <span class="total-price-text" id="display-total-price">200 บาท</span>
-            </div>
-
-            <div class="action-buttons-group">
-                <button class="reset-btn" onclick="resetDesignForm()">ล้างค่า</button>
-                <button class="confirm-design-btn" onclick="confirmCakeDesign()">ยืนยันการออกแบบเค้ก 🎂</button>
-            </div>
-        </div>
-
-        <!-- ================= PAGE 3: ติดตามพัสดุ (Tracking) ================= -->
-        <div id="page-tracking" class="page-view">
-            <div class="subpage-header">
-                <button class="back-btn" onclick="switchPage('home')"><i class="fa-solid fa-arrow-left"></i></button>
-                <div class="subpage-title">ติดตามสถานะคำสั่งซื้อ</div>
-            </div>
-            <div class="design-card-box" style="border-left: 4px solid #ff6b81;">
-                <strong>ออเดอร์ #CAKE-2026-0818 (กำลังจัดส่ง)</strong>
-                <p style="color:#8c7365; margin-top:4px;">เค้กวันเกิด ครีมนมสด (1 ปอนด์)</p>
-                <p style="color:#ff6b81; margin-top:4px; font-weight:500;">สถานะ: ไรเดอร์กำลังนำส่งถึงบ้านคุณ</p>
-            </div>
-        </div>
-
-        <!-- ================= PAGE 4: บัญชี & FAQ (Account & FAQ Combined) ================= -->
-        <div id="page-account" class="page-view">
-            <div class="subpage-header">
-                <button class="back-btn" onclick="switchPage('home')"><i class="fa-solid fa-arrow-left"></i></button>
-                <div class="subpage-title">บัญชีผู้ใช้งาน & คำถามพบบ่อย</div>
-            </div>
-            <div class="design-card-box" style="display:flex; align-items:center; gap:12px;">
-                <div style="width:50px; height:50px; background:#ffe6e8; border-radius:50%; display:flex; justify-content:center; align-items:center; color:#ff6b81; font-size:22px;">
-                    <i class="fa-solid fa-user-heart"></i>
-                </div>
-                <div>
-                    <strong>คุณลูกค้าคนสวย</strong>
-                    <p style="color:#8c7365;">member@cakedeli.com</p>
-                </div>
-            </div>
-            <div class="design-card-box" onclick="openModalInfo('สมาชิกสะสมแต้ม', 'คุณมีแต้มสะสมทั้งหมด: 350 คะแนน\nสามารถใช้เป็นส่วนลด 50 บาทในการสั่งซื้อครั้งถัดไป')">
-                <i class="fa-solid fa-gift" style="color:#ff6b81;"></i> คะแนนสะสมของฉัน (350 แต้ม)
-            </div>
-
-            <!-- ส่วนคำถามพบบ่อย (FAQ รวมเข้ามาในหน้าบัญชี) -->
-            <div class="section-header" style="margin-top: 16px;">
-                <h3>วิธีแก้ปัญหา & คำถามพบบ่อย (FAQ)</h3>
-            </div>
-            <div class="design-card-box" onclick="openModalInfo('เค้กละลายหรือเสียหายระหว่างขนส่งทำอย่างไร?', 'หากพบว่าเค้กเสียหาย ละลาย หรือเสียรูปทรงเนื่องจากการขนส่ง:\n\n1. ถ่ายรูปหรือวิดีโอสภาพกล่องและตัวเค้กทันทีที่ได้รับ\n2. ติดต่อ 089-123-4567 หรือแจ้งผ่านแชทแอดมินภายใน 2 ชั่วโมงหลังได้รับสินค้า\n3. ทางร้านจะดำเนินการจัดส่งเค้กชิ้นใหม่ให้ท่านฟรี หรือคืนเงินเต็มจำนวนครับ')">
-                <strong>🍰 เค้กละลายหรือเสียหายระหว่างขนส่งทำอย่างไร? <span class="price-tag"><i class="fa-solid fa-chevron-right"></i></span></strong>
-                <p style="color:#8c7365;">แนวทางปฏิบัติและการเคลมสินค้าเมื่อเกิดความเสียหาย</p>
-            </div>
-
-            <div class="design-card-box" onclick="openModalInfo('ต้องการเปลี่ยนที่อยู่จัดส่งกระทันหัน?', 'การเปลี่ยนที่อยู่จัดส่ง:\n\n• หากออเดอร์ยังไม่เข้าระบบจัดส่ง สามารถกดแก้ไขที่อยู่ได้ที่หน้า \"ติดตามพัสดุ\" หรือติดต่อไรเดอร์โดยตรง\n• หากไรเดอร์รับเค้กและอยู่ระหว่างเดินทางแล้ว อาจมีค่าใช้จ่ายในการจัดส่งเพิ่มตามระยะทางจริงครับ')">
-                <strong>📍 ต้องการเปลี่ยนที่อยู่จัดส่งกระทันหัน? <span class="price-tag"><i class="fa-solid fa-chevron-right"></i></span></strong>
-                <p style="color:#8c7365;">เงื่อนไขและขั้นตอนการแก้ไขจัดส่งปลายทาง</p>
-            </div>
-
-            <div class="design-card-box" onclick="openModalInfo('ลืมเลือกท็อปปิ้ง สามารถแก้ไขได้ไหม?', 'กรณีที่กดยืนยันออเดอร์ไปแล้ว:\n\n• หากออเดอร์ยังไม่ถูก \"เริ่มทำ\" ในครัว ท่านสามารถกดยกเลิกและสั่งใหม่ได้ทันที\n• แต่หากอยู่ในขั้นตอนตกแต่งแล้ว สามารถติดต่อแอดมินเพื่อขอเพิ่มท็อปปิ้งพิเศษ (มีค่าใช้จ่ายเพิ่มเติมส่วนต่าง)')">
-                <strong>✨ ลืมเลือกท็อปปิ้ง สามารถแก้ไขได้ไหม? <span class="price-tag"><i class="fa-solid fa-chevron-right"></i></span></strong>
-                <p style="color:#8c7365;">วิธีแก้ไขออเดอร์เมื่อลืมเลือกส่วนผสม</p>
-            </div>
-        </div>
-
-        <!-- แถบเมนูด้านล่าง (ปรับลดเหลือ 4 เมนูหลักตามโครงสร้างหน้าจอที่รวมกัน) -->
-        <div class="bottom-nav">
-            <button class="nav-item active" onclick="switchPage('home', this)">
-                <i class="fa-solid fa-house"></i>
-                <span>หน้าแรก</span>
-            </button>
-            <button class="nav-item" onclick="switchPage('design', this)">
-                <i class="fa-solid fa-cake-candles"></i>
-                <span>เลือกเค้ก & ดีไซน์</span>
-            </button>
-            <button class="nav-item" onclick="switchPage('tracking', this)">
-                <i class="fa-solid fa-truck-fast"></i>
-                <span>ติดตามพัสดุ</span>
-            </button>
-            <button class="nav-item" onclick="switchPage('account', this)">
-                <i class="fa-solid fa-user"></i>
-                <span>บัญชี & FAQ</span>
-            </button>
-        </div>
-
-        <!-- Modal สำหรับ Popup -->
-        <div id="app-modal" class="modal-overlay" onclick="closeModal(event)">
-            <div class="modal-box">
-                <h3 id="modal-title">หัวข้อแจ้งเตือน</h3>
-                <p id="modal-text">รายละเอียด...</p>
-                <div class="modal-actions">
-                    <button id="modal-copy-btn" class="modal-btn-secondary" onclick="copyModalText()" style="display:none;">คัดลอก</button>
-                    <button class="modal-btn" onclick="closeModalForce()">ตกลง</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
+    <!-- Google Fonts: Kanit & Prompt -->
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
-        // ฟังก์ชันสลับหน้าจอ
-        function switchPage(pageId, element) {
-            document.querySelectorAll('.page-view').forEach(page => {
-                page.classList.remove('active-page');
-            });
-            document.getElementById('page-' + pageId).classList.add('active-page');
-
-            if(element) {
-                document.querySelectorAll('.bottom-nav .nav-item').forEach(btn => {
-                    btn.classList.remove('active');
-                });
-                element.classList.add('active');
-            } else {
-                const navMap = {'home': 0, 'design': 1, 'tracking': 2, 'account': 3};
-                const buttons = document.querySelectorAll('.bottom-nav .nav-item');
-                if(navMap[pageId] !== undefined) {
-                    buttons.forEach(b => b.classList.remove('active'));
-                    buttons[navMap[pageId]].classList.add('active');
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Kanit', 'Prompt', 'sans-serif'],
+                    },
+                    colors: {
+                        cake: {
+                            50: '#fff1f2',
+                            100: '#ffe4e6',
+                            200: '#fecdd3',
+                            300: '#fda4af',
+                            400: '#fb7185',
+                            500: '#f43f5e',
+                            600: '#e11d48',
+                            pastelPink: '#ffccd5',
+                            pastelCream: '#fff3e2',
+                            pastelBrown: '#8d6e63',
+                            darkBrown: '#4e342e'
+                        }
+                    }
                 }
             }
         }
+    </script>
+    <style>
+        body { font-family: 'Kanit', sans-serif; background-color: #fffaf0; color: #4e342e; }
+        .pastel-shadow { box-shadow: 0 10px 25px -5px rgba(244, 63, 94, 0.1), 0 8px 10px -6px rgba(244, 63, 94, 0.1); }
+        .cake-card { transition: all 0.3s ease; }
+        .cake-card:hover { transform: translateY(-4px); box-shadow: 0 12px 20px -3px rgba(141, 110, 99, 0.15); }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #fff3e2; }
+        ::-webkit-scrollbar-thumb { background: #fca4af; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #f43f5e; }
+    </style>
+</head>
+<body class="h-full flex flex-col justify-between selection:bg-cake-200 selection:text-cake-900">
 
-        // ระบบคำนวณราคารวมแบบเรียลไทม์
-        function calculateTotal() {
-            let baseCakePrice = 120; // ราคาฐานเนื้อเค้ก
-            
-            // ราคาซอส
-            let selectedSauce = document.querySelector('input[name="sauce"]:checked');
-            let saucePrice = selectedSauce ? parseInt(selectedSauce.getAttribute('data-price')) : 0;
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col space-y-3 pointer-events-none"></div>
 
-            // ราคาครีม
-            let selectedCream = document.querySelector('input[name="cream"]:checked');
-            let creamPrice = selectedCream ? parseInt(selectedCream.getAttribute('data-price')) : 0;
+    <!-- Top Navigation Bar / Header -->
+    <header class="bg-white border-b border-cake-100 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="handleLogoClick()">
+                <div class="w-10 h-10 rounded-full bg-cake-100 flex items-center justify-center text-cake-600 text-xl shadow-inner">
+                    <i class="fa-solid fa-cake-candles"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg text-cake-darkBrown leading-tight">BakeHub <span class="text-xs px-2 py-0.5 bg-cake-100 text-cake-600 rounded-full font-normal">ระบบร้านเค้กออนไลน์</span></h1>
+                    <p class="text-xs text-stone-500" id="current-user-badge">ยังไม่ได้เข้าสู่ระบบ</p>
+                </div>
+            </div>
 
-            // ราคาพรีเมียมสีครีม (บวกเพิ่ม 20 บาทถ้าเปลี่ยนสี)
-            let colorHex = document.getElementById('cream-color').value;
-            let colorPrice = (colorHex !== '#ffb6c1') ? 20 : 0;
+            <div class="flex items-center space-x-3">
+                <div id="nav-actions" class="flex items-center space-x-2">
+                    <!-- Dynamic Auth / Role buttons injected via JS -->
+                </div>
+            </div>
+        </div>
+    </header>
 
-            // ท็อปปิ้ง
-            let toppingTotal = 0;
-            document.querySelectorAll('input[name="topping"]:checked').forEach(cb => {
-                toppingTotal += parseInt(cb.getAttribute('data-price'));
-            });
+    <!-- Main Dynamic Container -->
+    <main id="main-content" class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex items-center justify-center">
+        <!-- Dynamic Views rendered here -->
+    </main>
 
-            let grandTotal = baseCakePrice + saucePrice + creamPrice + colorPrice + toppingTotal;
-            document.getElementById('display-total-price').innerText = grandTotal + " บาท";
-            return grandTotal;
+    <!-- Footer -->
+    <footer class="bg-white border-t border-cake-100 mt-12 py-6 text-center text-xs text-stone-500">
+        <p>© 2026 BakeHub Online Cake System. All rights reserved. | ออกแบบด้วยธีมพาสเทลแสนหวานอบอุ่น 🍰✨</p>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // --- MOCK DATABASE & INITIAL STATE ---
+        const DEFAULT_STATE = {
+            currentUser: null,
+            cakes: [
+                { id: 1, name: 'สตรอว์เบอร์รีชีสเค้กละมุน', price: 450, category: 'birthday', weight: 1.2, image: 'https://placehold.co/400x300/ffe4e6/e11d48?text=Strawberry+Cheese+Cake', desc: 'ชีสเค้กเนื้อเนียนนุ่มท็อปด้วยสตรอว์เบอร์รีสดและซอสสูตรพิเศษ' },
+                { id: 2, name: 'ดับเบิ้ลช็อกโกแลตฟัดจ์', price: 520, category: 'chocolate', weight: 1.5, image: 'https://placehold.co/400x300/f3e8ff/7e22ce?text=Chocolate+Fudge+Cake', desc: 'ช็อกโกแลตเข้มข้นสอดไส้กานาชละลายในปาก เอาใจคนรักช็อกโกแลต' },
+                { id: 3, name: 'เค้กวนิลลามะพร้าวอ่อน', price: 390, category: 'birthday', weight: 1.0, image: 'https://placehold.co/400x300/fef3c7/d97706?text=Coconut+Vanilla+Cake', desc: 'เค้กนมสดเนื้อชิฟฟอนพร้อมเนื้อมะพร้าวอ่อนแท้หอมหวานกำลังดี' },
+                { id: 4, name: 'บลูเบอร์รีเรดเวลเวท', price: 480, category: 'wedding', weight: 1.3, image: 'https://placehold.co/400x300/ccfbf1/0f766e?text=Red+Velvet+Cake', desc: 'เรดเวลเวทรสชาติกลมกล่อมตัดเปรี้ยวด้วยบลูเบอร์รีคอมพอท' }
+            ],
+            ingredients: {
+                sizes: [
+                    { name: '1 ปอนด์ (เล็ก - 15 ซม.)', price: 0, weight: 1.0 },
+                    { name: '2 ปอนด์ (กลาง - 20 ซม.)', price: 250, weight: 1.8 },
+                    { name: '3 ปอนด์ (ใหญ่ - 25 ซม.)', price: 500, weight: 2.7 }
+                ],
+                bases: [
+                    { name: 'เนื้อวนิลลาชิฟฟอน (Vanilla Chiffon)', price: 0, weight: 0 },
+                    { name: 'เนื้อช็อกโกแลต (Chocolate Sponge)', price: 40, weight: 0.1 },
+                    { name: 'เนื้อเรดเวลเวท (Red Velvet)', price: 60, weight: 0.1 }
+                ],
+                creams: [
+                    { name: 'ครีมนมสดฮอกไกโด (Hokkaido Fresh Cream)', price: 0, weight: 0.2 },
+                    { name: 'บัตเตอร์ครีมวานิลลา (Vanilla Buttercream)', price: 30, weight: 0.3 },
+                    { name: 'ครีมชีสฟรอสติ้ง (Cream Cheese Frosting)', price: 50, weight: 0.3 }
+                ],
+                toppings: [
+                    { name: 'สตรอว์เบอร์รีสด (Fresh Strawberries)', price: 80, weight: 0.2 },
+                    { name: 'มาการองคละสี (Assorted Macarons)', price: 100, weight: 0.15 },
+                    { name: 'ช็อกโกแลตหนาแน่น (Dark Choco Ganache)', price: 70, weight: 0.2 },
+                    { name: 'ผลไม้รวมตามฤดูกาล (Mixed Seasonal Fruits)', price: 90, weight: 0.25 }
+                ]
+            },
+            drivers: [
+                { id: 'd1', name: 'พี่สมชาย ใจดี', phone: '0812345678', vehicle: 'มอเตอร์ไซค์ (กข 1234)', active: true },
+                { id: 'd2', name: 'พี่มาโนช ว่องไว', phone: '0898765432', vehicle: 'มอเตอร์ไซค์ (ฮฮ 5678)', active: true }
+            ],
+            orders: [
+                {
+                    id: 'ORD-2026-001',
+                    customerName: 'คุณน้ำหวาน ใจดี',
+                    customerPhone: '0891112233',
+                    items: [{ name: 'สตรอว์เบอร์รีชีสเค้กละมุน', qty: 1, price: 450 }],
+                    totalPrice: 450,
+                    status: 'pending',
+                    address: '123/4 ถ.พหลโยธิน จตุจักร กรุงเทพฯ',
+                    note: 'ขอเทียนวันเกิด 2 เล่มครับ',
+                    driverId: null,
+                    createdAt: '2026-06-01 10:30'
+                }
+            ],
+            cart: []
+        };
+
+        let appState = JSON.parse(localStorage.getItem('bakehub_state')) || DEFAULT_STATE;
+
+        function saveState() {
+            localStorage.setItem('bakehub_state', JSON.stringify(appState));
         }
 
-        function updateColorChoice() {
-            let colorHex = document.getElementById('cream-color').value;
-            document.getElementById('color-code-text').innerText = colorHex;
-            calculateTotal();
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const bgCol = type === 'success' ? 'bg-emerald-500' : type === 'error' ? 'bg-rose-500' : 'bg-amber-500';
+            toast.className = `${bgCol} text-white px-4 py-3 rounded-xl shadow-lg pointer-events-auto flex items-center space-x-2 transform translate-y-2 opacity-0 transition-all duration-300`;
+            toast.innerHTML = `<i class="fa-solid fa-circle-check"></i><span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.classList.remove('translate-y-2', 'opacity-0'); }, 50);
+            setTimeout(() => {
+                toast.classList.add('translate-y-2', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
 
-        // ฟังก์ชันรีเซ็ตการตั้งค่าหน้าดีไซน์
-        function resetDesignForm() {
-            document.querySelector('input[name="sauce"][value="ซอสสตอเบอร์รี่"]').checked = true;
-            document.querySelector('input[name="cream"][value="ครีมนมสด"]').checked = true;
-            document.getElementById('cream-color').value = '#ffb6c1';
-            document.getElementById('color-code-text').innerText = '#ffb6c1';
-            document.querySelectorAll('input[name="topping"]').forEach(cb => cb.checked = false);
-            calculateTotal();
+        let currentView = 'login';
+
+        function switchView(viewName) {
+            currentView = viewName;
+            renderHeaderActions();
+            const main = document.getElementById('main-content');
+            main.innerHTML = '';
+
+            if (viewName === 'home') renderHomeView(main);
+            else if (viewName === 'custom-cake') renderCustomCakeView(main);
+            else if (viewName === 'cart') renderCartView(main);
+            else if (viewName === 'customer-orders') renderCustomerOrdersView(main);
+            else if (viewName === 'admin-dashboard') renderAdminDashboardView(main);
+            else if (viewName === 'driver-portal') renderDriverPortalView(main);
+            else if (viewName === 'login') renderLoginView(main);
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // ปุ่มยืนยันการออกแบบเค้ก (สรุปรายการและราคา)
-        function confirmCakeDesign() {
-            let sauce = document.querySelector('input[name="sauce"]:checked');
-            let cream = document.querySelector('input[name="cream"]:checked');
-            let colorHex = document.getElementById('cream-color').value;
-            
-            let toppings = [];
-            document.querySelectorAll('input[name="topping"]:checked').forEach(cb => {
-                toppings.push(cb.value);
-            });
-
-            let total = calculateTotal();
-
-            let summaryText = `🎂 สรุปรายการเค้กที่คุณออกแบบ:\n\n` +
-                            `• เนื้อเค้กพื้นฐาน: 120.- บาท\n` +
-                            `• ซอส: ${sauce ? sauce.value : '-'} (${sauce ? sauce.getAttribute('data-price') : 0}.-)\n` +
-                            `• ครีม: ${cream ? cream.value : '-'} (${cream ? cream.getAttribute('data-price') : 0}.-)\n` +
-                            `• สีครีมโค้ด: ${colorHex} ${colorHex !== '#ffb6c1' ? '(+20.-)' : '(ฟรี)'}\n` +
-                            `• ท็อปปิ้ง: ${toppings.length > 0 ? toppings.join(', ') : 'ไม่มี'} (${toppings.length > 0 ? 'รวมตามที่เลือก' : '0.-'})\n\n` +
-                            `💵 ราคารวมทั้งหมด: ${total} บาท\n\n` +
-                            `สถานะ: บันทึกออเดอร์ลงตะกร้าพร้อมสั่งซื้อแล้ว! 🎉`;
-
-            openModalInfo('ยืนยันออเดอร์เค้กดีไซน์เอง', summaryText, true);
-        }
-
-        // Modal ควบคุมการเปิดปิด พร้อมรองรับปุ่มคัดลอก
-        function openModalInfo(title, text, showCopy = false) {
-            document.getElementById('modal-title').innerText = title;
-            document.getElementById('modal-text').innerText = text;
-            
-            let copyBtn = document.getElementById('modal-copy-btn');
-            if (showCopy) {
-                copyBtn.style.display = 'block';
+        function handleLogoClick() {
+            if (!appState.currentUser) {
+                switchView('login');
             } else {
-                copyBtn.style.display = 'none';
-            }
-
-            document.getElementById('app-modal').classList.add('show');
-        }
-
-        function closeModal(event) {
-            if (event.target.id === 'app-modal') {
-                document.getElementById('app-modal').classList.remove('show');
+                if (appState.currentUser.role === 'admin') switchView('admin-dashboard');
+                else if (appState.currentUser.role === 'driver') switchView('driver-portal');
+                else switchView('home');
             }
         }
 
-        function closeModalForce() {
-            document.getElementById('app-modal').classList.remove('shadow') || document.getElementById('app-modal').classList.remove('show');
+        function renderHeaderActions() {
+            const badge = document.getElementById('current-user-badge');
+            const actions = document.getElementById('nav-actions');
+            actions.innerHTML = '';
+
+            if (!appState.currentUser) {
+                badge.innerText = 'ยังไม่ได้เข้าสู่ระบบ';
+                // ในหน้าเข้าสู่ระบบ ซ่อนปุ่มล็อกอินบนขวาออกเพื่อความสะอาดตา
+            } else {
+                const user = appState.currentUser;
+                badge.innerHTML = `<span class="font-semibold text-cake-600">${user.name}</span> (${user.role === 'admin' ? 'ผู้ดูแลร้าน' : user.role === 'driver' ? 'พนักงานส่ง' : 'ลูกค้า'})`;
+                
+                let viewBtns = '';
+                if (user.role === 'customer') {
+                    viewBtns = `
+                        <button onclick="switchView('home')" class="px-3 py-1.5 text-sm bg-amber-100 text-amber-800 rounded-xl hover:bg-amber-200 transition">หน้าแรก</button>
+                        <button onclick="switchView('custom-cake')" class="px-3 py-1.5 text-sm bg-cake-100 text-cake-600 rounded-xl hover:bg-cake-200 transition">🍰 ออกแบบเค้ก</button>
+                        <button onclick="switchView('customer-orders')" class="px-3 py-1.5 text-sm bg-stone-100 text-stone-700 rounded-xl hover:bg-stone-200 transition">📦 ประวัติคำสั่งซื้อ</button>
+                        <button onclick="switchView('cart')" class="relative px-3 py-1.5 text-sm bg-cake-500 text-white rounded-xl hover:bg-cake-600 transition"><i class="fa-solid fa-cart-shopping"></i> <span class="absolute -top-1 -right-1 bg-amber-400 text-stone-900 text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">${appState.cart.length}</span></button>
+                    `;
+                } else if (user.role === 'admin') {
+                    viewBtns = `<button onclick="switchView('admin-dashboard')" class="px-3 py-1.5 text-sm bg-cake-600 text-white rounded-xl hover:bg-cake-700 transition"><i class="fa-solid fa-chart-line mr-1"></i> แผงควบคุมร้าน</button>`;
+                } else if (user.role === 'driver') {
+                    viewBtns = `<button onclick="switchView('driver-portal')" class="px-3 py-1.5 text-sm bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition"><i class="fa-solid fa-motorcycle mr-1"></i> งานจัดส่ง</button>`;
+                }
+
+                actions.innerHTML = `
+                    ${viewBtns}
+                    <button onclick="logout()" class="px-3 py-1.5 text-sm bg-rose-50 text-rose-600 rounded-xl hover:bg-rose-100 transition" title="ออกจากระบบ"><i class="fa-solid fa-power-off"></i></button>
+                `;
+            }
         }
 
-        function copyModalText() {
-            let textToCopy = document.getElementById('modal-text').innerText;
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                alert('คัดลอกข้อมูลเรียบร้อยแล้ว!');
-            }).catch(err => {
-                console.error('ไม่สามารถคัดลอกข้อความได้: ', err);
+        // --- VIEWS ---
+
+        function renderHomeView(container) {
+            container.innerHTML = `
+                <div class="bg-gradient-to-r from-cake-100 via-pink-50 to-amber-50 rounded-3xl p-8 mb-8 pastel-shadow flex flex-col md:flex-row items-center justify-between">
+                    <div class="max-w-lg mb-6 md:mb-0">
+                        <span class="px-3 py-1 bg-cake-200 text-cake-700 rounded-full text-xs font-semibold uppercase tracking-wider">เบเกอรี่โฮมเมด สดใหม่ทุกวัน</span>
+                        <h2 class="text-3xl md:text-4xl font-extrabold text-cake-darkBrown mt-3 mb-2">เค้กอร่อยละมุนลิ้น ส่งตรงถึงหน้าบ้านคุณ 🍰</h2>
+                        <p class="text-stone-600 text-sm md:text-base mb-6">เลือกเค้กวันเกิด เค้กวันพิเศษ หรือออกแบบเค้กในสไตล์คุณเองได้ง่ายๆ พร้อมระบบติดตามสถานะแบบเรียลไทม์</p>
+                        <button onclick="switchView('custom-cake')" class="px-6 py-3 bg-cake-500 text-white rounded-2xl font-semibold shadow-lg hover:bg-cake-600 transition flex items-center space-x-2">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span>ออกแบบเค้กตามใจชอบ</span>
+                        </button>
+                    </div>
+                    <div class="w-full md:w-80 h-56 rounded-2xl overflow-hidden shadow-md bg-white flex items-center justify-center p-2">
+                        <img src="https://placehold.co/500x400/ffe4e6/e11d48?text=BakeHub+Fresh+Cakes" alt="Cake Hero" class="w-full h-full object-cover rounded-xl">
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold text-cake-darkBrown"><i class="fa-solid fa-store mr-2 text-cake-500"></i>เมนูเค้กยอดนิยม</h3>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="cake-catalog"></div>
+            `;
+
+            const catalog = document.getElementById('cake-catalog');
+            appState.cakes.forEach(cake => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-2xl overflow-hidden border border-cake-100 cake-card flex flex-col justify-between';
+                card.innerHTML = `
+                    <div>
+                        <div class="h-48 overflow-hidden bg-stone-100 relative">
+                            <img src="${cake.image}" alt="${cake.name}" class="w-full h-full object-cover">
+                            <span class="absolute top-3 right-3 bg-white/90 backdrop-blur text-cake-600 px-2.5 py-1 rounded-full text-xs font-bold shadow-sm">${cake.weight} ปอนด์</span>
+                        </div>
+                        <div class="p-4">
+                            <h4 class="font-bold text-stone-800 text-base mb-1">${cake.name}</h4>
+                            <p class="text-xs text-stone-500 line-clamp-2 mb-3">${cake.desc}</p>
+                        </div>
+                    </div>
+                    <div class="p-4 pt-0 flex items-center justify-between">
+                        <span class="text-lg font-extrabold text-cake-600">฿${cake.price}</span>
+                        <button onclick="addToCartCatalog(${cake.id})" class="px-4 py-2 bg-cake-100 text-cake-600 hover:bg-cake-500 hover:text-white rounded-xl text-sm font-semibold transition flex items-center space-x-1.5">
+                            <i class="fa-solid fa-cart-plus"></i>
+                            <span>ใส่ตะกร้า</span>
+                        </button>
+                    </div>
+                `;
+                catalog.appendChild(card);
             });
         }
+
+        function addToCartCatalog(cakeId) {
+            const cake = appState.cakes.find(c => c.id === cakeId);
+            if (!cake) return;
+            appState.cart.push({
+                name: cake.name,
+                price: cake.price,
+                qty: 1,
+                detail: `เค้กมาตรฐาน (${cake.weight} ปอนด์)`
+            });
+            saveState();
+            renderHeaderActions();
+            showToast(`เพิ่ม "${cake.name}" ลงในตะกร้าแล้วค่ะ 🍰`);
+        }
+
+        function renderCustomCakeView(container) {
+            container.innerHTML = `
+                <div class="max-w-4xl mx-auto bg-white rounded-3xl p-6 md:p-8 border border-cake-100 pastel-shadow w-full">
+                    <div class="text-center mb-8">
+                        <span class="px-3 py-1 bg-cake-100 text-cake-600 rounded-full text-xs font-semibold">DIY Cake Studio</span>
+                        <h2 class="text-2xl md:text-3xl font-extrabold text-cake-darkBrown mt-2">ออกแบบเค้กในฝันของคุณเอง</h2>
+                        <p class="text-stone-500 text-sm mt-1">เลือกขนาด เนื้อเค้ก ครีม และท็อปปิ้งได้ตามใจชอบ คำนวณราคาและน้ำหนักให้อัตโนมัติ</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block text-sm font-bold text-stone-700 mb-2">1. ขนาดเค้ก (ปอนด์)</label>
+                                <select id="custom-size" onchange="calculateCustomCake()" class="w-full px-4 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-cake-400 bg-stone-50 text-sm">
+                                    ${appState.ingredients.sizes.map((s, idx) => `<option value="${idx}">${s.name} (+฿${s.price})</option>`).join('')}
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-stone-700 mb-2">2. เนื้อเค้ก (Base)</label>
+                                <select id="custom-base" onchange="calculateCustomCake()" class="w-full px-4 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-cake-400 bg-stone-50 text-sm">
+                                    ${appState.ingredients.bases.map((b, idx) => `<option value="${idx}">${b.name} (+฿${b.price})</option>`).join('')}
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-stone-700 mb-2">3. ครีมเคลือบ/ฟรอสติ้ง (Cream)</label>
+                                <select id="custom-cream" onchange="calculateCustomCake()" class="w-full px-4 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-cake-400 bg-stone-50 text-sm">
+                                    ${appState.ingredients.creams.map((c, idx) => `<option value="${idx}">${c.name} (+฿${c.price})</option>`).join('')}
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-stone-700 mb-2">4. ท็อปปิ้งตกแต่ง (Topping)</label>
+                                <select id="custom-topping" onchange="calculateCustomCake()" class="w-full px-4 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-cake-400 bg-stone-50 text-sm">
+                                    ${appState.ingredients.toppings.map((t, idx) => `<option value="${idx}">${t.name} (+฿${t.price})</option>`).join('')}
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-stone-700 mb-2">5. ข้อความบนหน้าเค้ก (ถ้ามี)</label>
+                                <input type="text" id="custom-message" placeholder="เช่น Happy Birthday Namwan" class="w-full px-4 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-cake-400 bg-stone-50 text-sm">
+                            </div>
+                        </div>
+
+                        <div class="bg-cake-50/60 rounded-2xl p-6 flex flex-col justify-between border border-cake-100">
+                            <div>
+                                <h3 class="font-bold text-stone-800 text-lg mb-4 flex items-center"><i class="fa-solid fa-receipt mr-2 text-cake-500"></i>สรุปรายการเค้กที่คุณออกแบบ</h3>
+                                <div id="custom-summary-list" class="space-y-3 text-sm text-stone-600 mb-6"></div>
+                            </div>
+                            <div class="border-t border-cake-200 pt-4">
+                                <div class="flex justify-between items-center mb-2 text-sm text-stone-500">
+                                    <span>น้ำหนักโดยประมาณ:</span>
+                                    <span id="custom-weight" class="font-semibold text-stone-700">1.2 กก.</span>
+                                </div>
+                                <div class="flex justify-between items-center mb-6">
+                                    <span class="text-base font-bold text-stone-800">ราคารวมทั้งสิ้น:</span>
+                                    <span id="custom-total-price" class="text-2xl font-extrabold text-cake-600">฿350</span>
+                                </div>
+                                <button onclick="addCustomCakeToCart()" class="w-full py-3 bg-cake-500 hover:bg-cake-600 text-white rounded-2xl font-bold shadow-md transition flex items-center justify-center space-x-2">
+                                    <i class="fa-solid fa-cart-plus"></i>
+                                    <span>เพิ่มเค้กออกแบบเองลงตะกร้า</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            calculateCustomCake();
+        }
+
+        function calculateCustomCake() {
+            const sizeIdx = document.getElementById('custom-size').value;
+            const baseIdx = document.getElementById('custom-base').value;
+            const creamIdx = document.getElementById('custom-cream').value;
+            const toppingIdx = document.getElementById('custom-topping').value;
+
+            const size = appState.ingredients.sizes[sizeIdx];
+            const base = appState.ingredients.bases[baseIdx];
+            const cream = appState.ingredients.creams[creamIdx];
+            const topping = appState.ingredients.toppings[toppingIdx];
+
+            const basePrice = 350;
+            const totalPrice = basePrice + size.price + base.price + cream.price + topping.price;
+            const totalWeight = (1.0 + size.weight + base.weight + cream.weight + topping.weight).toFixed(1);
+
+            document.getElementById('custom-total-price').innerText = `฿${totalPrice}`;
+            document.getElementById('custom-weight').innerText = `${totalWeight} กก.`;
+
+            document.getElementById('custom-summary-list').innerHTML = `
+                <div class="flex justify-between"><span>• ขนาด:</span> <span class="font-medium text-stone-800">${size.name}</span></div>
+                <div class="flex justify-between"><span>• เนื้อเค้ก:</span> <span class="font-medium text-stone-800">${base.name}</span></div>
+                <div class="flex justify-between"><span>• ครีม:</span> <span class="font-medium text-stone-800">${cream.name}</span></div>
+                <div class="flex justify-between"><span>• ท็อปปิ้ง:</span> <span class="font-medium text-stone-800">${topping.name}</span></div>
+            `;
+
+            window.lastCalculatedCustomCake = {
+                name: `เค้กออกแบบเอง (${size.name.split(' ')[0]})`,
+                price: totalPrice,
+                qty: 1,
+                detail: `เนื้อ: ${base.name} | ครีม: ${cream.name} | ท็อปปิ้ง: ${topping.name}` + (document.getElementById('custom-message').value ? ` | ข้อความ: "${document.getElementById('custom-message').value}"` : '')
+            };
+        }
+
+        function addCustomCakeToCart() {
+            const cake = window.lastCalculatedCustomCake;
+            if (!cake) return;
+            appState.cart.push(cake);
+            saveState();
+            renderHeaderActions();
+            showToast('เพิ่มเค้กออกแบบพิเศษลงในตะกร้าแล้วค่ะ! 🎂');
+            switchView('cart');
+        }
+
+        function renderCartView(container) {
+            container.innerHTML = `
+                <div class="max-w-3xl mx-auto bg-white rounded-3xl p-6 md:p-8 border border-cake-100 pastel-shadow w-full">
+                    <h2 class="text-2xl font-bold text-cake-darkBrown mb-6 flex items-center"><i class="fa-solid fa-cart-shopping mr-3 text-cake-500"></i>ตะกร้าสินค้าของคุณ</h2>
+                    
+                    ${appState.cart.length === 0 ? `
+                        <div class="text-center py-12">
+                            <div class="w-20 h-20 bg-cake-50 text-cake-300 rounded-full flex items-center justify-center text-3xl mx-auto mb-4"><i class="fa-solid fa-basket-shopping"></i></div>
+                            <p class="text-stone-500 mb-4">ตะกร้าสินค้าของคุณยังว่างอยู่เลย</p>
+                            <button onclick="switchView('home')" class="px-6 py-2.5 bg-cake-500 text-white rounded-xl font-medium shadow hover:bg-cake-600 transition">เลือกซื้อเค้กเลย</button>
+                        </div>
+                    ` : `
+                        <div class="space-y-4 mb-6">
+                            ${appState.cart.map((item, idx) => `
+                                <div class="flex items-center justify-between p-4 bg-stone-50 rounded-2xl border border-stone-100">
+                                    <div>
+                                        <h4 class="font-bold text-stone-800">${item.name}</h4>
+                                        <p class="text-xs text-stone-500">${item.detail || ''}</p>
+                                        <span class="text-sm font-semibold text-cake-600">฿${item.price}</span>
+                                    </div>
+                                    <div class="flex items-center space-x-3">
+                                        <button onclick="removeFromCart(${idx})" class="text-stone-400 hover:text-rose-500 p-2 transition"><i class="fa-solid fa-trash-can"></i></button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <div class="bg-cake-50 rounded-2xl p-6 mb-6 border border-cake-100">
+                            <h3 class="font-bold text-stone-800 mb-4">ข้อมูลการจัดส่ง</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-stone-600 mb-1">ชื่อ-นามสกุล ผู้รับ</label>
+                                    <input type="text" id="checkout-name" value="${appState.currentUser ? appState.currentUser.name : ''}" class="w-full px-4 py-2 rounded-xl border border-stone-200 text-sm bg-white focus:ring-2 focus:ring-cake-400 focus:outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-stone-600 mb-1">เบอร์โทรศัพท์ติดต่อ</label>
+                                    <input type="text" id="checkout-phone" value="${appState.currentUser ? appState.currentUser.phone : ''}" class="w-full px-4 py-2 rounded-xl border border-stone-200 text-sm bg-white focus:ring-2 focus:ring-cake-400 focus:outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-stone-600 mb-1">ที่อยู่จัดส่งละเอียด</label>
+                                    <textarea id="checkout-address" rows="2" placeholder="บ้านเลขที่ ถนน แขวง/ตำบล เขต/อำเภอ จังหวัด" class="w-full px-4 py-2 rounded-xl border border-stone-200 text-sm bg-white focus:ring-2 focus:ring-cake-400 focus:outline-none"></textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-stone-600 mb-1">หมายเหตุถึงร้านค้า / พนักงานส่ง</label>
+                                    <input type="text" id="checkout-note" placeholder="เช่น ระวังเค้กกระแทก, ขอมีดและเทียน" class="w-full px-4 py-2 rounded-xl border border-stone-200 text-sm bg-white focus:ring-2 focus:ring-cake-400 focus:outline-none">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center border-t border-stone-100 pt-4 mb-6">
+                            <span class="text-lg font-bold text-stone-800">ยอดชำระสุทธิ:</span>
+                            <span class="text-2xl font-extrabold text-cake-600">฿${appState.cart.reduce((sum, item) => sum + item.price, 0)}</span>
+                        </div>
+
+                        <button onclick="checkoutOrder()" class="w-full py-3.5 bg-cake-500 hover:bg-cake-600 text-white rounded-2xl font-bold shadow-lg transition flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-check-circle"></i>
+                            <span>ยืนยันการสั่งซื้อเค้ก</span>
+                        </button>
+                    `}
+                </div>
+            `;
+        }
+
+        function removeFromCart(idx) {
+            appState.cart.splice(idx, 1);
+            saveState();
+            renderHeaderActions();
+            switchView('cart');
+        }
+
+        function checkoutOrder() {
+            const name = document.getElementById('checkout-name').value.trim();
+            const phone = document.getElementById('checkout-phone').value.trim();
+            const address = document.getElementById('checkout-address').value.trim();
+            const note = document.getElementById('checkout-note').value.trim();
+
+            if (!name || !phone || !address) {
+                showToast('กรุณากรอกข้อมูลการจัดส่งให้ครบถ้วนนะคะ', 'error');
+                return;
+            }
+
+            const totalPrice = appState.cart.reduce((sum, item) => sum + item.price, 0);
+            const newOrder = {
+                id: `ORD-2026-${Math.floor(100 + Math.random() * 900)}`,
+                customerName: name,
+                customerPhone: phone,
+                items: [...appState.cart],
+                totalPrice: totalPrice,
+                status: 'pending',
+                address: address,
+                note: note || '-',
+                driverId: null,
+                createdAt: new Date().toISOString().replace('T', ' ').substring(0, 16)
+            };
+
+            appState.orders.unshift(newOrder);
+            appState.cart = [];
+            saveState();
+            renderHeaderActions();
+            showToast('สั่งซื้อเค้กสำเร็จแล้ว! ขอบคุณที่ไว้วางใจ BakeHub 🍰');
+            switchView('customer-orders');
+        }
+
+        function renderCustomerOrdersView(container) {
+            container.innerHTML = `
+                <div class="max-w-4xl mx-auto w-full">
+                    <h2 class="text-2xl font-bold text-cake-darkBrown mb-6 flex items-center"><i class="fa-solid fa-box-open mr-3 text-cake-500"></i>ประวัติคำสั่งซื้อและการติดตามสถานะ</h2>
+                    
+                    ${appState.orders.length === 0 ? `
+                        <div class="bg-white rounded-3xl p-12 text-center border border-cake-100">
+                            <p class="text-stone-500">ยังไม่มีประวัติการสั่งซื้อเค้ก</p>
+                        </div>
+                    ` : `
+                        <div class="space-y-6">
+                            ${appState.orders.map(order => {
+                                let statusBadge = '';
+                                let statusText = '';
+                                if(order.status === 'pending') { statusBadge = 'bg-amber-100 text-amber-800'; statusText = 'รอร้านค้ารับออเดอร์'; }
+                                else if(order.status === 'baking') { statusBadge = 'bg-cake-100 text-cake-700'; statusText = 'กำลังอบเค้กสดใหม่'; }
+                                else if(order.status === 'delivering') { statusBadge = 'bg-sky-100 text-sky-800'; statusText = 'พนักงานกำลังจัดส่ง'; }
+                                else if(order.status === 'completed') { statusBadge = 'bg-emerald-100 text-emerald-800'; statusText = 'จัดส่งสำเร็จแล้ว'; }
+
+                                const driver = appState.drivers.find(d => d.id === order.driverId);
+
+                                return `
+                                    <div class="bg-white rounded-3xl p-6 border border-cake-100 pastel-shadow">
+                                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-stone-100 pb-4 mb-4">
+                                            <div>
+                                                <span class="font-bold text-cake-600 text-base">${order.id}</span>
+                                                <p class="text-xs text-stone-400">สั่งซื้อเมื่อ: ${order.createdAt}</p>
+                                            </div>
+                                            <span class="mt-2 sm:mt-0 px-3 py-1 rounded-full text-xs font-bold ${statusBadge}">${statusText}</span>
+                                        </div>
+
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 text-sm">
+                                            <div>
+                                                <p class="font-semibold text-stone-700 mb-1">รายการเค้ก:</p>
+                                                <ul class="list-disc list-inside text-stone-600 text-xs space-y-1">
+                                                    ${order.items.map(i => `<li>${i.name} (฿${i.price})</li>`).join('')}
+                                                </ul>
+                                            </div>
+                                            <div>
+                                                <p class="font-semibold text-stone-700 mb-1">ข้อมูลจัดส่ง:</p>
+                                                <p class="text-xs text-stone-600">📍 ${order.address}</p>
+                                                <p class="text-xs text-stone-600 mt-1">📝 หมายเหตุ: ${order.note}</p>
+                                                ${driver ? `<p class="text-xs text-emerald-600 font-semibold mt-2"><i class="fa-solid fa-motorcycle mr-1"></i> ไรเดอร์: ${driver.name} (${driver.phone})</p>` : ''}
+                                            </div>
+                                        </div>
+
+                                        <div class="flex justify-between items-center border-t border-stone-100 pt-4">
+                                            <span class="text-sm font-bold text-stone-700">ยอดชำระ: <span class="text-cake-600 text-base font-extrabold">฿${order.totalPrice}</span></span>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    `}
+                </div>
+            `;
+        }
+
+        function renderAdminDashboardView(container) {
+            container.innerHTML = `
+                <div class="space-y-8 w-full">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 rounded-3xl border border-cake-100 pastel-shadow">
+                        <div>
+                            <span class="px-3 py-1 bg-cake-100 text-cake-600 rounded-full text-xs font-semibold">Admin Panel</span>
+                            <h2 class="text-2xl font-extrabold text-cake-darkBrown mt-1">แผงควบคุมผู้ดูแลระบบ BakeHub</h2>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                        <div class="bg-white p-6 rounded-3xl border border-cake-100 shadow-sm flex items-center space-x-4">
+                            <div class="w-14 h-14 rounded-2xl bg-cake-100 text-cake-600 flex items-center justify-center text-2xl"><i class="fa-solid fa-shopping-bag"></i></div>
+                            <div>
+                                <p class="text-xs text-stone-500 font-medium">คำสั่งซื้อทั้งหมด</p>
+                                <h3 class="text-2xl font-extrabold text-stone-800">${appState.orders.length} ออเดอร์</h3>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-3xl border border-cake-100 shadow-sm flex items-center space-x-4">
+                            <div class="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl"><i class="fa-solid fa-coins"></i></div>
+                            <div>
+                                <p class="text-xs text-stone-500 font-medium">ยอดขายรวม</p>
+                                <h3 class="text-2xl font-extrabold text-stone-800">฿${appState.orders.reduce((sum, o) => sum + o.totalPrice, 0)}</h3>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-3xl border border-cake-100 shadow-sm flex items-center space-x-4">
+                            <div class="w-14 h-14 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center text-2xl"><i class="fa-solid fa-motorcycle"></i></div>
+                            <div>
+                                <p class="text-xs text-stone-500 font-medium">พนักงานจัดส่ง</p>
+                                <h3 class="text-2xl font-extrabold text-stone-800">${appState.drivers.length} คน</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-3xl border border-cake-100 pastel-shadow">
+                        <h3 class="font-bold text-stone-800 text-lg mb-4">สถิติยอดขายรายสัปดาห์</h3>
+                        <div class="h-64"><canvas id="salesChart"></canvas></div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-3xl border border-cake-100 pastel-shadow">
+                        <h3 class="font-bold text-stone-800 text-lg mb-4">จัดการคำสั่งซื้อลูกค้า</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead>
+                                    <tr class="border-b border-stone-100 text-stone-400 text-xs uppercase">
+                                        <th class="pb-3">รหัสออเดอร์</th>
+                                        <th class="pb-3">ลูกค้า</th>
+                                        <th class="pb-3">รายการเค้ก</th>
+                                        <th class="pb-3">ยอดรวม</th>
+                                        <th class="pb-3">สถานะ</th>
+                                        <th class="pb-3">จัดการ</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-stone-100">
+                                    ${appState.orders.map(order => `
+                                        <tr>
+                                            <td class="py-3 font-bold text-cake-600">${order.id}</td>
+                                            <td class="py-3 font-medium text-stone-800">${order.customerName}<br><span class="text-xs text-stone-400">${order.customerPhone}</span></td>
+                                            <td class="py-3 text-xs text-stone-600">${order.items.map(i => i.name).join(', ')}</td>
+                                            <td class="py-3 font-semibold text-stone-800">฿${order.totalPrice}</td>
+                                            <td class="py-3">
+                                                <select onchange="updateOrderStatus('${order.id}', this.value)" class="text-xs px-2.5 py-1.5 rounded-xl border border-stone-200 bg-stone-50 font-medium focus:outline-none">
+                                                    <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>⏳ รอรับออเดอร์</option>
+                                                    <option value="baking" ${order.status === 'baking' ? 'selected' : ''}>🍰 กำลังอบเค้ก</option>
+                                                    <option value="delivering" ${order.status === 'delivering' ? 'selected' : ''}>🛵 กำลังจัดส่ง</option>
+                                                    <option value="completed" ${order.status === 'completed' ? 'selected' : ''}>✅ สำเร็จ</option>
+                                                </select>
+                                            </td>
+                                            <td class="py-3">
+                                                <select onchange="assignDriver('${order.id}', this.value)" class="text-xs px-2.5 py-1.5 rounded-xl border border-stone-200 bg-stone-50 font-medium focus:outline-none">
+                                                    <option value="">เลือกไรเดอร์</option>
+                                                    ${appState.drivers.map(d => `<option value="${d.id}" ${order.driverId === d.id ? 'selected' : ''}>${d.name}</option>`).join('')}
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            setTimeout(() => {
+                const ctx = document.getElementById('salesChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์', 'อาทิตย์'],
+                        datasets: [{
+                            label: 'ยอดขาย (บาท)',
+                            data: [1200, 1900, 1500, 2200, 3100, 4800, 4200],
+                            borderColor: '#f43f5e',
+                            backgroundColor: 'rgba(244, 63, 94, 0.05)',
+                            fill: true,
+                            tension: 0.3
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            }, 50);
+        }
+
+        function updateOrderStatus(orderId, newStatus) {
+            const order = appState.orders.find(o => o.id === orderId);
+            if (order) {
+                order.status = newStatus;
+                saveState();
+                showToast(`อัปเดตสถานะออเดอร์ ${orderId} เรียบร้อยแล้ว`);
+            }
+        }
+
+        function assignDriver(orderId, driverId) {
+            const order = appState.orders.find(o => o.id === orderId);
+            if (order) {
+                order.driverId = driverId;
+                saveState();
+                showToast(`มอบหมายงานให้ไรเดอร์เรียบร้อยแล้ว`);
+            }
+        }
+
+        function renderDriverPortalView(container) {
+            const driver = appState.drivers[0];
+            const assignedOrders = appState.orders.filter(o => o.driverId === driver.id || o.status === 'delivering');
+
+            container.innerHTML = `
+                <div class="max-w-3xl mx-auto space-y-6 w-full">
+                    <div class="bg-white p-6 rounded-3xl border border-cake-100 pastel-shadow flex items-center justify-between">
+                        <div>
+                            <span class="px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-semibold">Driver Portal</span>
+                            <h2 class="text-2xl font-extrabold text-stone-800 mt-1">ยินดีต้อนรับ, ${driver.name}</h2>
+                            <p class="text-xs text-stone-500">พาหนะ: ${driver.vehicle}</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl"><i class="fa-solid fa-motorcycle"></i></div>
+                    </div>
+
+                    <h3 class="font-bold text-stone-800 text-lg">รายการจัดส่งเค้กที่ได้รับมอบหมาย</h3>
+                    
+                    ${assignedOrders.length === 0 ? `
+                        <div class="bg-white p-8 rounded-3xl text-center border border-cake-100">
+                            <p class="text-stone-500 text-sm">ยังไม่มีงานจัดส่งในขณะนี้</p>
+                        </div>
+                    ` : `
+                        <div class="space-y-4">
+                            ${assignedOrders.map(order => `
+                                <div class="bg-white p-6 rounded-3xl border border-cake-100 pastel-shadow">
+                                    <div class="flex justify-between items-center border-b border-stone-100 pb-3 mb-3">
+                                        <span class="font-bold text-cake-600">${order.id}</span>
+                                        <span class="px-3 py-1 bg-sky-100 text-sky-800 rounded-full text-xs font-bold">กำลังจัดส่ง</span>
+                                    </div>
+                                    <p class="text-sm font-semibold text-stone-800 mb-1">ลูกค้า: ${order.customerName} (${order.customerPhone})</p>
+                                    <p class="text-xs text-stone-600 mb-4">📍 ที่อยู่: ${order.address}</p>
+                                    <div class="flex justify-end">
+                                        <button onclick="completeDelivery('${order.id}')" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-sm font-semibold shadow transition flex items-center space-x-1.5">
+                                            <i class="fa-solid fa-check"></i>
+                                            <span>ยืนยันส่งเค้กสำเร็จ</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `}
+                </div>
+            `;
+        }
+
+        function completeDelivery(orderId) {
+            const order = appState.orders.find(o => o.id === orderId);
+            if (order) {
+                order.status = 'completed';
+                saveState();
+                showToast('ยืนยันการจัดส่งสำเร็จเรียบร้อยค่ะ! 🎉');
+                switchView('driver-portal');
+            }
+        }
+
+        // --- ENHANCED PRIVATE LOGIN VIEW ---
+        function renderLoginView(container) {
+            container.innerHTML = `
+                <div class="max-w-md mx-auto bg-white rounded-3xl p-8 border border-cake-100 pastel-shadow w-full my-auto">
+                    <div class="text-center mb-6">
+                        <div class="w-16 h-16 rounded-full bg-cake-100 text-cake-600 flex items-center justify-center text-2xl mx-auto mb-3 shadow-inner"><i class="fa-solid fa-lock"></i></div>
+                        <h2 class="text-2xl font-extrabold text-cake-darkBrown">เข้าสู่ระบบ BakeHub</h2>
+                        <p class="text-xs text-stone-500 mt-1">กรุณากรอกข้อมูลส่วนตัวเพื่อเข้าใช้งานระบบ</p>
+                    </div>
+
+                    <form onsubmit="handleCustomLogin(event)" class="space-y-4 mb-6">
+                        <div>
+                            <label class="block text-xs font-bold text-stone-600 mb-1.5">เบอร์โทรศัพท์มือถือ</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-stone-400 text-sm"><i class="fa-solid fa-phone"></i></span>
+                                <input type="tel" id="login-phone" placeholder="08XXXXXXXX" required class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-200 text-sm bg-stone-50 focus:bg-white focus:ring-2 focus:ring-cake-400 focus:outline-none transition">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-stone-600 mb-1.5">รหัสผ่าน (Password)</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-stone-400 text-sm"><i class="fa-solid fa-key"></i></span>
+                                <input type="password" id="login-password" placeholder="••••••••" required class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-200 text-sm bg-stone-50 focus:bg-white focus:ring-2 focus:ring-cake-400 focus:outline-none transition">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full py-3 bg-cake-500 hover:bg-cake-600 text-white rounded-2xl font-bold shadow-md transition flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-right-to-bracket"></i>
+                            <span>เข้าสู่ระบบ</span>
+                        </button>
+                    </form>
+
+                    <div class="relative flex py-2 items-center">
+                        <div class="flex-grow border-t border-stone-100"></div>
+                        <span class="flex-shrink mx-4 text-xs text-stone-400 font-medium">หรือทดลองเข้าสู่ระบบด่วน</span>
+                        <div class="flex-grow border-t border-stone-100"></div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2 mt-4">
+                        <button onclick="loginAs('customer')" class="py-2 px-1 bg-stone-50 hover:bg-cake-50 text-stone-700 hover:text-cake-600 rounded-xl text-xs font-semibold border border-stone-100 transition flex flex-col items-center">
+                            <i class="fa-solid fa-user mb-1 text-cake-500"></i> ลูกค้า
+                        </button>
+                        <button onclick="loginAs('admin')" class="py-2 px-1 bg-stone-50 hover:bg-cake-50 text-stone-700 hover:text-cake-600 rounded-xl text-xs font-semibold border border-stone-100 transition flex flex-col items-center">
+                            <i class="fa-solid fa-user-shield mb-1 text-cake-500"></i> แอดมิน
+                        </button>
+                        <button onclick="loginAs('driver')" class="py-2 px-1 bg-stone-50 hover:bg-cake-50 text-stone-700 hover:text-cake-600 rounded-xl text-xs font-semibold border border-stone-100 transition flex flex-col items-center">
+                            <i class="fa-solid fa-motorcycle mb-1 text-cake-500"></i> ไรเดอร์
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function handleCustomLogin(event) {
+            event.preventDefault();
+            const phone = document.getElementById('login-phone').value.trim();
+            if (phone.startsWith('082') || phone === '0823334455') {
+                loginAs('admin');
+            } else if (phone.startsWith('081') || phone === '0812345678') {
+                loginAs('driver');
+            } else {
+                appState.currentUser = { name: 'คุณลูกค้าคนพิเศษ', phone: phone, role: 'customer' };
+                saveState();
+                switchView('home');
+                showToast('เข้าสู่ระบบสำเร็จ ยินดีต้อนรับค่ะ 🍰');
+            }
+        }
+
+        function loginAs(role) {
+            if (role === 'customer') {
+                appState.currentUser = { name: 'คุณน้ำหวาน ใจดี', phone: '0891112233', role: 'customer' };
+                switchView('home');
+            } else if (role === 'admin') {
+                appState.currentUser = { name: 'คุณเบเกอร์ (เจ้าของร้าน)', phone: '0823334455', role: 'admin' };
+                switchView('admin-dashboard');
+            } else if (role === 'driver') {
+                appState.currentUser = { name: 'พี่สมชาย ใจดี', phone: '0812345678', role: 'driver' };
+                switchView('driver-portal');
+            }
+            saveState();
+            showToast(`เข้าสู่ระบบสำเร็จ (${appState.currentUser.name})`);
+        }
+
+        function logout() {
+            appState.currentUser = null;
+            saveState();
+            switchView('login');
+            showToast('ออกจากระบบเรียบร้อยแล้วค่ะ');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // บังคับให้เริ่มเปิดมาที่หน้าเข้าสู่ระบบเสมอก่อนใช้งาน
+            appState.currentUser = null;
+            saveState();
+            switchView('login');
+        });
     </script>
 </body>
 </html>
