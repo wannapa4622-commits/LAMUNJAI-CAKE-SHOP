@@ -58,7 +58,7 @@
     <!-- Top Navigation Bar / Header -->
     <header class="bg-white border-b border-cake-100 sticky top-0 z-40 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center space-x-3 cursor-pointer" onclick="handleLogoClick()">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchView('home')">
                 <div class="w-10 h-10 rounded-full bg-cake-100 flex items-center justify-center text-cake-600 text-xl shadow-inner">
                     <i class="fa-solid fa-cake-candles"></i>
                 </div>
@@ -77,7 +77,7 @@
     </header>
 
     <!-- Main Dynamic Container -->
-    <main id="main-content" class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex items-center justify-center">
+    <main id="main-content" class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <!-- Dynamic Views rendered here -->
     </main>
 
@@ -161,7 +161,7 @@
             }, 3000);
         }
 
-        let currentView = 'login';
+        let currentView = 'home';
 
         function switchView(viewName) {
             currentView = viewName;
@@ -180,16 +180,6 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function handleLogoClick() {
-            if (!appState.currentUser) {
-                switchView('login');
-            } else {
-                if (appState.currentUser.role === 'admin') switchView('admin-dashboard');
-                else if (appState.currentUser.role === 'driver') switchView('driver-portal');
-                else switchView('home');
-            }
-        }
-
         function renderHeaderActions() {
             const badge = document.getElementById('current-user-badge');
             const actions = document.getElementById('nav-actions');
@@ -197,7 +187,10 @@
 
             if (!appState.currentUser) {
                 badge.innerText = 'ยังไม่ได้เข้าสู่ระบบ';
-                // ในหน้าเข้าสู่ระบบ ซ่อนปุ่มล็อกอินบนขวาออกเพื่อความสะอาดตา
+                actions.innerHTML = `
+                    <button onclick="switchView('login')" class="px-3 py-1.5 text-sm bg-cake-100 text-cake-600 rounded-xl hover:bg-cake-200 font-medium transition"><i class="fa-solid fa-right-to-bracket mr-1"></i> เข้าสู่ระบบ</button>
+                    <button onclick="switchView('cart')" class="relative px-3 py-1.5 text-sm bg-cake-500 text-white rounded-xl hover:bg-cake-600 shadow-sm transition"><i class="fa-solid fa-cart-shopping"></i> <span id="cart-count" class="absolute -top-1 -right-1 bg-amber-400 text-stone-900 text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">${appState.cart.length}</span></button>
+                `;
             } else {
                 const user = appState.currentUser;
                 badge.innerHTML = `<span class="font-semibold text-cake-600">${user.name}</span> (${user.role === 'admin' ? 'ผู้ดูแลร้าน' : user.role === 'driver' ? 'พนักงานส่ง' : 'ลูกค้า'})`;
@@ -292,7 +285,7 @@
 
         function renderCustomCakeView(container) {
             container.innerHTML = `
-                <div class="max-w-4xl mx-auto bg-white rounded-3xl p-6 md:p-8 border border-cake-100 pastel-shadow w-full">
+                <div class="max-w-4xl mx-auto bg-white rounded-3xl p-6 md:p-8 border border-cake-100 pastel-shadow">
                     <div class="text-center mb-8">
                         <span class="px-3 py-1 bg-cake-100 text-cake-600 rounded-full text-xs font-semibold">DIY Cake Studio</span>
                         <h2 class="text-2xl md:text-3xl font-extrabold text-cake-darkBrown mt-2">ออกแบบเค้กในฝันของคุณเอง</h2>
@@ -402,7 +395,7 @@
 
         function renderCartView(container) {
             container.innerHTML = `
-                <div class="max-w-3xl mx-auto bg-white rounded-3xl p-6 md:p-8 border border-cake-100 pastel-shadow w-full">
+                <div class="max-w-3xl mx-auto bg-white rounded-3xl p-6 md:p-8 border border-cake-100 pastel-shadow">
                     <h2 class="text-2xl font-bold text-cake-darkBrown mb-6 flex items-center"><i class="fa-solid fa-cart-shopping mr-3 text-cake-500"></i>ตะกร้าสินค้าของคุณ</h2>
                     
                     ${appState.cart.length === 0 ? `
@@ -505,7 +498,7 @@
 
         function renderCustomerOrdersView(container) {
             container.innerHTML = `
-                <div class="max-w-4xl mx-auto w-full">
+                <div class="max-w-4xl mx-auto">
                     <h2 class="text-2xl font-bold text-cake-darkBrown mb-6 flex items-center"><i class="fa-solid fa-box-open mr-3 text-cake-500"></i>ประวัติคำสั่งซื้อและการติดตามสถานะ</h2>
                     
                     ${appState.orders.length === 0 ? `
@@ -563,7 +556,7 @@
 
         function renderAdminDashboardView(container) {
             container.innerHTML = `
-                <div class="space-y-8 w-full">
+                <div class="space-y-8">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 rounded-3xl border border-cake-100 pastel-shadow">
                         <div>
                             <span class="px-3 py-1 bg-cake-100 text-cake-600 rounded-full text-xs font-semibold">Admin Panel</span>
@@ -687,7 +680,7 @@
             const assignedOrders = appState.orders.filter(o => o.driverId === driver.id || o.status === 'delivering');
 
             container.innerHTML = `
-                <div class="max-w-3xl mx-auto space-y-6 w-full">
+                <div class="max-w-3xl mx-auto space-y-6">
                     <div class="bg-white p-6 rounded-3xl border border-cake-100 pastel-shadow flex items-center justify-between">
                         <div>
                             <span class="px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-semibold">Driver Portal</span>
@@ -740,7 +733,7 @@
         // --- ENHANCED PRIVATE LOGIN VIEW ---
         function renderLoginView(container) {
             container.innerHTML = `
-                <div class="max-w-md mx-auto bg-white rounded-3xl p-8 border border-cake-100 pastel-shadow w-full my-auto">
+                <div class="max-w-md mx-auto bg-white rounded-3xl p-8 border border-cake-100 pastel-shadow mt-6">
                     <div class="text-center mb-6">
                         <div class="w-16 h-16 rounded-full bg-cake-100 text-cake-600 flex items-center justify-center text-2xl mx-auto mb-3 shadow-inner"><i class="fa-solid fa-lock"></i></div>
                         <h2 class="text-2xl font-extrabold text-cake-darkBrown">เข้าสู่ระบบ BakeHub</h2>
@@ -794,6 +787,7 @@
         function handleCustomLogin(event) {
             event.preventDefault();
             const phone = document.getElementById('login-phone').value.trim();
+            // ตรวจสอบตามเบอร์โทรศัพท์เพื่อแยกบทบาทจำลอง
             if (phone.startsWith('082') || phone === '0823334455') {
                 loginAs('admin');
             } else if (phone.startsWith('081') || phone === '0812345678') {
@@ -824,15 +818,12 @@
         function logout() {
             appState.currentUser = null;
             saveState();
-            switchView('login');
+            switchView('home');
             showToast('ออกจากระบบเรียบร้อยแล้วค่ะ');
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            // บังคับให้เริ่มเปิดมาที่หน้าเข้าสู่ระบบเสมอก่อนใช้งาน
-            appState.currentUser = null;
-            saveState();
-            switchView('login');
+            switchView('home');
         });
     </script>
 </body>
